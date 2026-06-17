@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ménage à deux</title>
+  <meta name="description" content="Petites corvées partagées qui se remettent à zéro toutes seules.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- Écran de connexion -->
+  <section class="gate" id="gate">
+    <div class="gate-card">
+      <h1 class="gate-title">ménage <span class="amp">à</span> deux</h1>
+      <p class="gate-sub mono">les corvées qui se rappellent toutes seules</p>
+      <form id="loginForm" class="gate-form">
+        <input type="password" id="password" class="field" placeholder="mot de passe" autocomplete="current-password" required>
+        <button type="submit" class="btn-primary" id="loginBtn">entrer</button>
+      </form>
+      <p class="gate-error mono" id="gateError"></p>
+    </div>
+  </section>
+
+  <!-- Application -->
+  <main class="app hidden" id="app">
+    <header class="app-header">
+      <h1 class="app-title">ménage <span class="amp">à</span> deux</h1>
+      <button class="btn-ghost mono" id="logoutBtn">sortir</button>
+    </header>
+
+    <form id="addForm" class="add-form">
+      <input type="text" id="taskName" class="field" placeholder="nouvelle corvée (ex. nourrir le chien)" required>
+      <div class="period">
+        <input type="number" id="periodValue" class="field field-num" min="1" value="12" required>
+        <select id="periodUnit" class="field field-select">
+          <option value="minutes">minutes</option>
+          <option value="heures" selected>heures</option>
+          <option value="jours">jours</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary">ajouter</button>
+    </form>
+
+    <ul class="task-list" id="taskList"></ul>
+    <p class="empty mono hidden" id="emptyState">aucune corvée. ajoute-en une.</p>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
