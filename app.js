@@ -5,7 +5,7 @@ import {
 import {
   getDatabase, ref, onValue, push, update, remove,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { firebaseConfig, sharedEmail } from "./firebase-config.js";
+import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -22,6 +22,7 @@ const UNIT_MS = {
 const gate = document.getElementById("gate");
 const appView = document.getElementById("app");
 const loginForm = document.getElementById("loginForm");
+const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const gateError = document.getElementById("gateError");
 const logoutBtn = document.getElementById("logoutBtn");
@@ -39,9 +40,9 @@ loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   gateError.textContent = "";
   try {
-    await signInWithEmailAndPassword(auth, sharedEmail, passwordInput.value);
+    await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
   } catch (err) {
-    gateError.textContent = "mot de passe refusé.";
+    gateError.textContent = "e-mail ou mot de passe refusé.";
     console.error(err);
   }
 });
@@ -53,6 +54,7 @@ onAuthStateChanged(auth, (user) => {
     gate.classList.add("hidden");
     appView.classList.remove("hidden");
     passwordInput.value = "";
+    emailInput.value = "";
     subscribeTasks();
   } else {
     appView.classList.add("hidden");
@@ -84,8 +86,13 @@ addForm.addEventListener("submit", (e) => {
   periodValueInput.value = "12";
 });
 
+function currentName() {
+  const u = auth.currentUser;
+  return u ? (u.displayName || u.email.split("@")[0]) : "";
+}
+
 function markDone(id) {
-  update(ref(db, `tasks/${id}`), { lastDone: Date.now() });
+  update(ref(db, `tasks/${id}`), { lastDone: Date.now(), lastDoneBy: currentName() });
 }
 
 function removeTask(id) {
@@ -107,11 +114,12 @@ function humanDuration(ms) {
 
 function statusText(task, now) {
   if (task.lastDone == null) return "jamais fait — à faire";
+  const by = task.lastDoneBy ? ` par ${task.lastDoneBy}` : "";
   const elapsed = now - task.lastDone;
   if (elapsed < task.periodMs) {
-    return `fait · revient dans ${humanDuration(task.periodMs - elapsed)}`;
+    return `fait${by} · revient dans ${humanDuration(task.periodMs - elapsed)}`;
   }
-  return `à refaire (échu depuis ${humanDuration(elapsed - task.periodMs)})`;
+  return `à refaire (fait${by} il y a ${humanDuration(elapsed)})`;
 }
 
 function render() {
