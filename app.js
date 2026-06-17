@@ -7,6 +7,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").catch((err) => console.error("SW:", err));
+}
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -34,6 +38,7 @@ const taskList = document.getElementById("taskList");
 const emptyState = document.getElementById("emptyState");
 
 let tasks = {};
+let editingId = null;
 
 // ── Authentification ──────────────────────────────────────────────────────────
 loginForm.addEventListener("submit", async (e) => {
@@ -91,8 +96,22 @@ function currentName() {
   return u ? (u.displayName || u.email.split("@")[0]) : "";
 }
 
-function markDone(id) {
-  update(ref(db, `tasks/${id}`), { lastDone: Date.now(), lastDoneBy: currentName() });
+function toggleDone(id, task) {
+  if (isDone(task, Date.now())) {
+    update(ref(db, `tasks/${id}`), { lastDone: null, lastDoneBy: null });
+  } else {
+    update(ref(db, `tasks/${id}`), { lastDone: Date.now(), lastDoneBy: currentName() });
+  }
+}
+
+function setDoneTime(id, ts) {
+  update(ref(db, `tasks/${id}`), { lastDone: ts, lastDoneBy: currentName() });
+}
+
+function toLocalInput(ts) {
+  const d = new Date(ts);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function removeTask(id) {
@@ -141,31 +160,67 @@ function render() {
       const check = document.createElement("button");
       check.className = "task-check";
       check.textContent = done ? "✓" : "○";
-      check.title = "marquer comme fait";
-      check.addEventListener("click", () => markDone(id));
+      check.title = done ? "annuler (pas fait)" : "marquer comme fait";
+      check.addEventListener("click", () => toggleDone(id, task));
 
       const body = document.createElement("div");
       body.className = "task-body";
       const nameEl = document.createElement("div");
       nameEl.className = "task-name";
       nameEl.textContent = task.name;
-      const statusEl = document.createElement("div");
-      statusEl.className = "task-status";
-      statusEl.textContent = statusText(task, now);
-      body.append(nameEl, statusEl);
+      body.appendChild(nameEl);
+
+      if (editingId === id) {
+        const editRow = document.createElement("div");
+        editRow.className = "task-edit";
+        const timeInput = document.createElement("input");
+        timeInput.type = "datetime-local";
+        timeInput.className = "field";
+        timeInput.value = toLocalInput(task.lastDone ?? now);
+        const save = document.createElement("button");
+        save.className = "btn-primary btn-sm";
+        save.textContent = "ok";
+        save.addEventListener("click", () => {
+          if (timeInput.value) setDoneTime(id, new Date(timeInput.value).getTime());
+          editingId = null;
+          render();
+        });
+        const cancel = document.createElement("button");
+        cancel.className = "btn-ghost btn-sm";
+        cancel.textContent = "annuler";
+        cancel.addEventListener("click", () => { editingId = null; render(); });
+        editRow.append(timeInput, save, cancel);
+        body.appendChild(editRow);
+      } else {
+        const statusEl = document.createElement("div");
+        statusEl.className = "task-status";
+        statusEl.textContent = statusText(task, now);
+        body.appendChild(statusEl);
+      }
+
+      const edit = document.createElement("button");
+      edit.className = "task-icon";
+      edit.innerHTML = "&#9998;";
+      edit.title = "corriger l'heure";
+      edit.addEventListener("click", () => {
+        editingId = editingId === id ? null : id;
+        render();
+      });
 
       const del = document.createElement("button");
-      del.className = "task-remove";
+      del.className = "task-icon task-remove";
       del.innerHTML = "&times;";
       del.title = "retirer";
       del.addEventListener("click", () => {
         if (confirm(`Retirer « ${task.name} » ?`)) removeTask(id);
       });
 
-      li.append(check, body, del);
+      li.append(check, body, edit, del);
       taskList.appendChild(li);
     });
 }
 
 // Re-render périodique pour que les corvées « repassent » à faire toutes seules.
-setInterval(() => { if (!appView.classList.contains("hidden")) render(); }, 30_000);
+setInterval(() => {
+  if (!appView.classList.contains("hidden") && editingId === null) render();
+}, 30_000);

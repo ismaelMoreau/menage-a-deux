@@ -185,17 +185,28 @@ body {
 .task-check:hover { border-color: var(--accent); color: var(--accent); }
 .task.done .task-check { background: var(--accent); border-color: var(--accent); color: #04120c; }
 
-.task-remove {
+.task-icon {
   flex-shrink: 0;
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   cursor: pointer;
   padding: 0.3rem;
   line-height: 1;
 }
+.task-icon:hover { color: var(--text-primary); }
 .task-remove:hover { color: var(--warn); }
+
+.task-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+.task-edit .field { font-size: 0.8rem; padding: 0.45rem 0.6rem; }
+.btn-sm { font-size: 0.75rem; padding: 0.45rem 0.8rem; }
 
 .empty { text-align: center; color: var(--text-muted); padding: 3rem 1rem; }
 

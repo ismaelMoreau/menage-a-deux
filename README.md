@@ -17,6 +17,14 @@ Vanilla JS + [Firebase Realtime Database](https://firebase.google.com/), héberg
 6. **Project settings → Your apps → Web (`</>`)** : copie la config et reporte `apiKey`, `authDomain`, `databaseURL`, `projectId` dans [`firebase-config.js`](firebase-config.js).
 7. `git push` → la page se met à jour automatiquement sur GitHub Pages.
 
+## Installer sur le téléphone
+
+C'est une **PWA** : ouvre https://ismaelmoreau.github.io/menage-a-deux/ dans le navigateur, puis
+- **Android (Chrome)** : menu ⋮ → *Ajouter à l'écran d'accueil* (ou la bannière d'installation).
+- **iPhone (Safari)** : bouton Partager → *Sur l'écran d'accueil*.
+
+Ça s'ouvre alors en plein écran avec son icône, comme une vraie app. Fonctionne hors-ligne pour l'affichage (les changements se synchronisent dès le retour du réseau).
+
 ## Sécurité — honnête
 
 Les clés Firebase dans `firebase-config.js` sont **publiques par design** : c'est normal. La protection réelle vient des **règles** (`auth != null`) + des **comptes** : personne sans un identifiant valide ne peut lire ou écrire les corvées.
