@@ -11,8 +11,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const firebaseConfig = {
-  apiKey: "TON_API_KEY",
-  authDomain: "TON_PROJET.firebaseapp.com",
-  databaseURL: "https://TON_PROJET-default-rtdb.firebaseio.com",
-  projectId: "TON_PROJET",
+  apiKey: "AIzaSyBOAUJNpVbJ6uRLjSZE-frqEeKG0Gohrxg",
+  authDomain: "menage-a-deux-22f1d.firebaseapp.com",
+  databaseURL: "https://menage-a-deux-22f1d-default-rtdb.firebaseio.com",
+  projectId: "menage-a-deux-22f1d",
 };
