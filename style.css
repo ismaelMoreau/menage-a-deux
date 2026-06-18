@@ -143,7 +143,16 @@ body {
   margin-bottom: 2rem;
 }
 .add-form #taskName { flex: 1 1 100%; }
-.period { display: flex; gap: 0.6rem; flex: 1; }
+.period-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 100%;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.period { display: inline-flex; gap: 0.6rem; margin-left: auto; }
 
 /* ── Liste des corvées ──────────────────────────────────────────────────── */
 .task-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }

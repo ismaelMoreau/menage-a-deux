@@ -46,14 +46,26 @@
 
     <form id="addForm" class="add-form">
       <input type="text" id="taskName" class="field" placeholder="nouvelle corvée (ex. nourrir le chien)" required>
-      <div class="period">
-        <input type="number" id="periodValue" class="field field-num" min="1" value="12" required>
-        <select id="periodUnit" class="field field-select">
-          <option value="minutes">minutes</option>
-          <option value="heures" selected>heures</option>
-          <option value="jours">jours</option>
-        </select>
-      </div>
+      <label class="period-label">revient toutes les
+        <span class="period">
+          <input type="number" id="periodValue" class="field field-num" min="1" value="12" required>
+          <select id="periodUnit" class="field field-select">
+            <option value="minutes">minutes</option>
+            <option value="heures" selected>heures</option>
+            <option value="jours">jours</option>
+          </select>
+        </span>
+      </label>
+      <label class="period-label">rappel si pas fait après
+        <span class="period">
+          <input type="number" id="remindValue" class="field field-num" min="0" value="2" required>
+          <select id="remindUnit" class="field field-select">
+            <option value="minutes">minutes</option>
+            <option value="heures" selected>heures</option>
+            <option value="jours">jours</option>
+          </select>
+        </span>
+      </label>
       <button type="submit" class="btn-primary">ajouter</button>
     </form>
 

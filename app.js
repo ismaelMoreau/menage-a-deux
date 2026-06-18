@@ -6,7 +6,6 @@ import {
   getDatabase, ref, onValue, push, update, remove,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
-import { emailNotify } from "./notify-config.js";
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch((err) => console.error("SW:", err));
@@ -35,6 +34,8 @@ const addForm = document.getElementById("addForm");
 const taskNameInput = document.getElementById("taskName");
 const periodValueInput = document.getElementById("periodValue");
 const periodUnitInput = document.getElementById("periodUnit");
+const remindValueInput = document.getElementById("remindValue");
+const remindUnitInput = document.getElementById("remindUnit");
 const taskList = document.getElementById("taskList");
 const emptyState = document.getElementById("emptyState");
 
@@ -82,14 +83,18 @@ addForm.addEventListener("submit", (e) => {
   const name = taskNameInput.value.trim();
   if (!name) return;
   const periodMs = Number(periodValueInput.value) * UNIT_MS[periodUnitInput.value];
+  const remindAfterMs = Number(remindValueInput.value) * UNIT_MS[remindUnitInput.value];
   push(tasksRef, {
     name,
     periodMs,
+    remindAfterMs,
     lastDone: null,
+    lastRemind: null,
     order: Date.now(),
   });
   taskNameInput.value = "";
   periodValueInput.value = "12";
+  remindValueInput.value = "2";
 });
 
 function currentName() {
@@ -102,23 +107,6 @@ function toggleDone(id, task) {
     update(ref(db, `tasks/${id}`), { lastDone: null, lastDoneBy: null });
   } else {
     update(ref(db, `tasks/${id}`), { lastDone: Date.now(), lastDoneBy: currentName() });
-    notifyOthers(task.name);
-  }
-}
-
-async function notifyOthers(taskName) {
-  if (!emailNotify.enabled) return;
-  const me = auth.currentUser?.email;
-  const recipients = emailNotify.members.filter((m) => m.email !== me);
-  if (!recipients.length) return;
-  const { default: emailjs } = await import("https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm");
-  const when = new Date().toLocaleString("fr-CA", { dateStyle: "short", timeStyle: "short" });
-  for (const r of recipients) {
-    emailjs
-      .send(emailNotify.serviceId, emailNotify.templateId,
-        { to_email: r.email, actor: currentName(), task_name: taskName, when },
-        { publicKey: emailNotify.publicKey })
-      .catch((err) => console.error("mail:", err));
   }
 }
 
@@ -188,7 +176,8 @@ function render() {
       nameEl.textContent = task.name;
       const periodEl = document.createElement("span");
       periodEl.className = "task-period";
-      periodEl.textContent = `↻ ${humanDuration(task.periodMs)}`;
+      periodEl.textContent = `↻ ${humanDuration(task.periodMs)}`
+        + (task.remindAfterMs ? ` · rappel +${humanDuration(task.remindAfterMs)}` : "");
       nameEl.appendChild(periodEl);
       body.appendChild(nameEl);
 
