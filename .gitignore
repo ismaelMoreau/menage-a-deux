@@ -1,0 +1,19 @@
+# Secrets — ne jamais commiter
+.env
+.env.*
+!.env.example
+serviceAccount.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# Dépendances
+node_modules/
+
+# Logs
+*.log
+
+# Fichiers OS / éditeur
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
