@@ -1,0 +1,9 @@
+[Unit]
+Description=ménage à deux — rappel des corvées en retard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/menage-a-deux/cron
+ExecStart=/usr/bin/node %h/menage-a-deux/cron/remind.js
