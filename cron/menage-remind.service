@@ -6,4 +6,4 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=%h/menage-a-deux/cron
-ExecStart=/bin/bash -lc 'node %h/menage-a-deux/cron/remind.js'
+ExecStart=/bin/bash -c 'source %h/.nvm/nvm.sh && node %h/menage-a-deux/cron/remind.js'
