@@ -164,6 +164,13 @@ body {
 
 .task-body { flex: 1; min-width: 0; }
 .task-name { font-weight: 600; font-size: 1.05rem; }
+.task-period {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}
 .task-status { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; }
 .task.due .task-status { color: var(--warn); }
 .task.done .task-status { color: var(--accent); }

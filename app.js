@@ -168,6 +168,10 @@ function render() {
       const nameEl = document.createElement("div");
       nameEl.className = "task-name";
       nameEl.textContent = task.name;
+      const periodEl = document.createElement("span");
+      periodEl.className = "task-period";
+      periodEl.textContent = `↻ ${humanDuration(task.periodMs)}`;
+      nameEl.appendChild(periodEl);
       body.appendChild(nameEl);
 
       if (editingId === id) {
