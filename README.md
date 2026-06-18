@@ -17,17 +17,31 @@ Vanilla JS + [Firebase Realtime Database](https://firebase.google.com/), héberg
 6. **Project settings → Your apps → Web (`</>`)** : copie la config et reporte `apiKey`, `authDomain`, `databaseURL`, `projectId` dans [`firebase-config.js`](firebase-config.js).
 7. `git push` → la page se met à jour automatiquement sur GitHub Pages.
 
-## Recevoir un e-mail quand l'autre fait une corvée (optionnel)
+## Rappels par e-mail (corvée en retard que personne ne fait)
 
-Sans serveur ni carte, via [EmailJS](https://www.emailjs.com) : quand l'un coche une corvée, son navigateur envoie un e-mail à l'autre (le tel notifie via l'app Mail).
+Chaque corvée a un délai de rappel (« rappel si pas fait après »). Une **Cloud Function planifiée** vérifie toutes les 30 min les corvées en retard au-delà de ce délai et envoie un e-mail à tout le monde — même téléphones fermés. Un seul rappel par échéance (pas de spam), réarmé dès que quelqu'un fait la corvée.
 
-1. Compte gratuit sur [emailjs.com](https://www.emailjs.com).
-2. **Email Services** → connecte ta boîte (Gmail…) → note le **Service ID**.
-3. **Email Templates** → crée un modèle avec `{{actor}}`, `{{task_name}}`, `{{when}}` dans le corps et `{{to_email}}` dans le champ *To* → note le **Template ID**.
-4. **Account → API Keys** → copie la **Public Key**.
-5. Reporte les 3 + les e-mails des membres dans [`notify-config.js`](notify-config.js), passe `enabled` à `true`, `git push`.
+Mise en route (nécessite le plan **Blaze** — carte requise, coût ≈ 0 $ avec le quota gratuit) :
 
-Quota gratuit ≈ 200 mails/mois. L'e-mail part du navigateur de la personne qui agit.
+1. Console Firebase → **Upgrade** le projet vers le plan **Blaze**.
+2. Crée un **mot de passe d'application Gmail** : compte Google → Sécurité → Validation en 2 étapes (activée) → *Mots de passe des applications*.
+3. Installe le CLI et connecte-toi :
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+4. Depuis la racine du repo, enregistre les 3 secrets :
+   ```bash
+   firebase functions:secrets:set GMAIL_USER   # ton adresse Gmail
+   firebase functions:secrets:set GMAIL_PASS   # le mot de passe d'application
+   firebase functions:secrets:set RECIPIENTS   # "toi@x.com,elle@y.com"
+   ```
+5. Déploie :
+   ```bash
+   firebase deploy --only functions
+   ```
+
+Le code de la fonction est dans [`functions/index.js`](functions/index.js). Pour changer la fréquence, édite `schedule` puis redéploie.
 
 ## Installer sur le téléphone
 
@@ -49,3 +63,4 @@ Les clés Firebase dans `firebase-config.js` sont **publiques par design** : c'e
 | `style.css` | thème dark void / accent menthe |
 | `app.js` | auth, sync temps réel, logique de reset |
 | `firebase-config.js` | tes clés (à remplir) |
+| `functions/index.js` | Cloud Function planifiée : rappels e-mail |
