@@ -17,6 +17,18 @@ Vanilla JS + [Firebase Realtime Database](https://firebase.google.com/), héberg
 6. **Project settings → Your apps → Web (`</>`)** : copie la config et reporte `apiKey`, `authDomain`, `databaseURL`, `projectId` dans [`firebase-config.js`](firebase-config.js).
 7. `git push` → la page se met à jour automatiquement sur GitHub Pages.
 
+## Recevoir un e-mail quand l'autre fait une corvée (optionnel)
+
+Sans serveur ni carte, via [EmailJS](https://www.emailjs.com) : quand l'un coche une corvée, son navigateur envoie un e-mail à l'autre (le tel notifie via l'app Mail).
+
+1. Compte gratuit sur [emailjs.com](https://www.emailjs.com).
+2. **Email Services** → connecte ta boîte (Gmail…) → note le **Service ID**.
+3. **Email Templates** → crée un modèle avec `{{actor}}`, `{{task_name}}`, `{{when}}` dans le corps et `{{to_email}}` dans le champ *To* → note le **Template ID**.
+4. **Account → API Keys** → copie la **Public Key**.
+5. Reporte les 3 + les e-mails des membres dans [`notify-config.js`](notify-config.js), passe `enabled` à `true`, `git push`.
+
+Quota gratuit ≈ 200 mails/mois. L'e-mail part du navigateur de la personne qui agit.
+
 ## Installer sur le téléphone
 
 C'est une **PWA** : ouvre https://ismaelmoreau.github.io/menage-a-deux/ dans le navigateur, puis

@@ -6,6 +6,7 @@ import {
   getDatabase, ref, onValue, push, update, remove,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { emailNotify } from "./notify-config.js";
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch((err) => console.error("SW:", err));
@@ -101,6 +102,23 @@ function toggleDone(id, task) {
     update(ref(db, `tasks/${id}`), { lastDone: null, lastDoneBy: null });
   } else {
     update(ref(db, `tasks/${id}`), { lastDone: Date.now(), lastDoneBy: currentName() });
+    notifyOthers(task.name);
+  }
+}
+
+async function notifyOthers(taskName) {
+  if (!emailNotify.enabled) return;
+  const me = auth.currentUser?.email;
+  const recipients = emailNotify.members.filter((m) => m.email !== me);
+  if (!recipients.length) return;
+  const { default: emailjs } = await import("https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm");
+  const when = new Date().toLocaleString("fr-CA", { dateStyle: "short", timeStyle: "short" });
+  for (const r of recipients) {
+    emailjs
+      .send(emailNotify.serviceId, emailNotify.templateId,
+        { to_email: r.email, actor: currentName(), task_name: taskName, when },
+        { publicKey: emailNotify.publicKey })
+      .catch((err) => console.error("mail:", err));
   }
 }
 
